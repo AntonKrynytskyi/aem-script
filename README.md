@@ -24,6 +24,7 @@ Script will help you to simplified process of start/stop AEM instance(s)
 ```sh
 $ chmod 555 init.sh
 $ sudo ./init.sh
+$ source ~/.bashrc
 ```
  - That's all, now you can use "$ aem" command through terminal
 
