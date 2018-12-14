@@ -10,3 +10,4 @@ sudo chmod 777 cash.txt
 
 echo $comn >> ~/.bashrc 
 
+source ~/.bashrc
