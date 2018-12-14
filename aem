@@ -167,7 +167,7 @@ def extractPortValue(str):
 		return N_A
 
 def extractPidValue(str):
-	match=re.search(r'^[a-z]*\b(|\S{1,})\s[0-9]*', str)
+	match=re.search(r'^[a-z]*\b(|\S{1,})\s{1,}[0-9]*', str)
 	if match:
 		pidStr=match.group()
 		pidStr=' '.join(pidStr.split()) 
