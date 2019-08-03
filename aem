@@ -320,19 +320,6 @@ def find_active_env_by_id(env_id):
     return None
 
 
-# THINK ABOUT REWRITE IT
-def get_actual_cash_map_by_id(env_id):
-    cash_map = read_cash_map_id_key_from_file()
-    if len(cash_map) == 0:
-        write_cash_map_to_file()
-        cash_map = read_cash_map_id_key_from_file()
-
-    elif is_not_started_env(cash_map, env_id):
-        write_cash_map_to_file()
-        cash_map = read_cash_map_id_key_from_file()
-    return cash_map
-
-
 def is_not_started_env(cash_map_id_key, env_id):
     for envIdFromMap in cash_map_id_key:
         if envIdFromMap == env_id:
@@ -428,7 +415,7 @@ def handle_start_command():
 
     env_id = sys.argv[2]
     if is_number(env_id):
-        cash_map = get_actual_cash_map_by_id(env_id)
+        cash_map = read_cash_map_id_key_from_file()
         if is_not_started_env(cash_map, env_id):
             print("[WARN]\n[WARN] Instance with ID(%s) not found.\n[WARN]"
                   "\n[WARN] Use command to update instances information:"
