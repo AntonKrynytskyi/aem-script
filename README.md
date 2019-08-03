@@ -14,10 +14,18 @@ Script will help you to simplified process of start/stop AEM instance(s)
   - stop env by id
 
 
+### ATTENTION:
+ 
+   - AUTHOR ISN'T RESPONSIBLE FOR THE USE OF THIS SCRIPT.
+   - THE USER(S) USE(S) THIS SCRIPT ON HIS/HER/THEM OWN RISK.
+
+###  WARNING: 
+   - I'M NOT RECOMMENDED USE THIS SCRIPT ON PRODUCTION SERVER(S)
+
 
 ### Installation
 
- - Download arhcive [AEM-Script.1.0.zip](https://github.com/AntonKrynytskyi/aem-script/raw/master/archive/AEM-Script.1.0.zip)
+ - Download arhcive [AEM-Script.1.1.0.zip](https://github.com/AntonKrynytskyi/aem-script/raw/master/archive/AEM-Script.1.1.0.zip)
  - Extract file in some directory
  - Open terminal in this directory, about which we mentioned in previous item
  - Run next commands:
@@ -277,4 +285,4 @@ $ aem -help
 
 
 **Free Software, Hell Yeah!**
-### Download arhcive [AEM-Script.1.0.zip](https://github.com/AntonKrynytskyi/aem-script/raw/master/archive/AEM-Script.1.0.zip)
+### Download arhcive [AEM-Script.1.1.0.zip](https://github.com/AntonKrynytskyi/aem-script/raw/master/archive/AEM-Script.1.1.0.zip)
