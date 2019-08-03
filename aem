@@ -1,415 +1,489 @@
 #! /usr/bin/python
+#
+# ATTENTION: AUTHOR ISN'T RESPONSIBLE FOR THE USE OF THIS SCRIPT.
+#            THE USER(S) USE(S) THIS SCRIPT ON HIS/HER/THEM OWN RISK.
+#
+# WARNING: I'M NOT RECOMMENDED USE THIS SCRIPT ON PRODUCTION SERVER(S)
+#
 # Script will help you to simplifier process start/stop 
-#                    AEM instance(s)                 
-# 
+#                    AEM instance(s)
+#
+#
 # @Author: Anton Krynytskyi
 # @Email:  AntonKrynytskyi@gmail.com
 # @GitHub: https://github.com/AntonKrynytskyi/aem-script
 
+
 #################################
-#-------->Import sectin<--------#
+# -------->Import section<--------#
 #################################
 import os
-import re
-import sys
 import os.path
+import re
 import subprocess
+import sys
 
 ###################################
-#-------->Constant sectin<--------#
+# -------->Constant section<--------#
 ###################################
-STOP="-e"
-KILL="-k"
-INFO="-i"
-START="-s"
-HELP="-help"
-UPDATE="-u"
+STOP = "-e"
+KILL = "-k"
+INFO = "-i"
+START = "-s"
+HELP = "-help"
+UPDATE = "-u"
+ALL = "all"
 
-ONE_ARG=1
-TWO_ARGS=2
-THREE_ARGS=3
+ONE_ARG = 1
+TWO_ARGS = 2
+THREE_ARGS = 3
 
-N_A="{n/a}"
+N_A = "{n/a}"
 
-DATA_FILE_APTH = "cash.txt"
+DATA_FILE_PATH = "cash.txt"
+
 
 #################################
-#-------->Class section<--------#
+# -------->Class section<--------
 #################################
 class Env:
-	id=N_A
-	pid=N_A
-	runMods=N_A
-	port=N_A
-	debugPort=N_A
-	pathbyPid=N_A
+    def __init__(self):
+        pass
 
-	def __str__(self):
-		return "[ID-------]: %s\n[PID------]: %s\n[RunMods--]: %s\n[Port-----]: %s\n[DebugPort]: %s\n[EnvPath--]: %s\n"%(self.id,self.pid,self.runMods,self.port,self.debugPort,self.pathbyPid,)
+    id = N_A
+    pid = N_A
+    run_mods = N_A
+    port = N_A
+    debug_port = N_A
+    path_by_pid = N_A
+
+    def __str__(self):
+        return "[INFO]\n[INFO] (ID)       : %s\n[INFO] (PID)      : %s\n[INFO] (RunMods)  : %s\n[INFO] (Port)     : " \
+               "%s\n[INFO] (DebugPort): %s\n[INFO] (EnvPath)  : %s" % (
+                   self.id, self.pid, self.run_mods, self.port, self.debug_port, self.path_by_pid,)
+
 
 ##################################
-#-------->System section<--------#
+# -------->System section<--------
 ##################################
-def getStrRepresentationOfInvocation(strCommand):
-	buffer = os.popen(strCommand)
-	return buffer.read()
+def get_str_representation_of_invocation(str_command):
+    io_buffer = os.popen(str_command)
+    return io_buffer.read()
 
-def stopEnvByPath(path):
-	strCommand='sudo sh %s/crx-quickstart/bin/stop'%(path)
-	subprocess.call(strCommand, shell=True)
 
-def isNumber(strNum):
-	try:
-	   int(strNum)
-	   return True
-	except ValueError:
-	   return False
+def stop_env_by_path(path):
+    str_command = 'sudo sh %s/crx-quickstart/bin/stop' % path
+    subprocess.call(str_command, shell=True)
+
+
+def is_number(str_num):
+    try:
+        int(str_num)
+        return True
+    except ValueError:
+        return False
+
 
 #####################################
-#-------->Read file section<--------#
+# -------->Read file section<--------
 #####################################
-def readCashMapPathKeyFromFile():
-	aemPathIdMap={}
-	if os.path.isfile(DATA_FILE_APTH):
-		f = open(DATA_FILE_APTH, "r")
-		for strLine in f:
-			if strLine:
-				tempArr=strLine.strip().split("=");
-				if len(tempArr)==2:
-					aemPathIdMap[tempArr[1]]=tempArr[0]
+def read_cash_map_path_key_from_file():
+    aem_path_id_map = {}
+    if os.path.isfile(DATA_FILE_PATH):
+        f = open(DATA_FILE_PATH, "r")
+        for strLine in f:
+            if strLine:
+                temp_arr = strLine.strip().split("=")
+                if len(temp_arr) == 2:
+                    aem_path_id_map[temp_arr[1]] = temp_arr[0]
 
-		f.close() 
-	return aemPathIdMap	
+        f.close()
+    return aem_path_id_map
 
-def readCashMapIdKeyFromFile():
-	aemPathIdMap={}
-	if os.path.isfile(DATA_FILE_APTH):
-		f = open(DATA_FILE_APTH, "r")
-		for strLine in f:
-			if strLine:
-				tempArr=strLine.strip().split("=");
-				if len(tempArr)==2:
-					aemPathIdMap[tempArr[0]]=tempArr[1]
 
-		f.close() 
-	return aemPathIdMap	
+def read_cash_map_id_key_from_file():
+    aem_path_id_map = {}
+    if os.path.isfile(DATA_FILE_PATH):
+        f = open(DATA_FILE_PATH, "r")
+        for strLine in f:
+            if strLine:
+                temp_arr = strLine.strip().split("=")
+                if len(temp_arr) == 2:
+                    aem_path_id_map[temp_arr[0]] = temp_arr[1]
 
-######################################
-#-------->Write file section<--------#
-######################################
-def writePathToFile(aemPathIdMap):
-	f = open(DATA_FILE_APTH, "w")
-	
-	for key in aemPathIdMap:
-	 	f.write(aemPathIdMap[key] +"="+ key + "\n")
-	f.close() 
-	printMsg("[cash.txt file was updated]")
+        f.close()
+    return aem_path_id_map
+
 
 ######################################
-#-------->Print info section<--------#
+# -------->Write file section<--------
 ######################################
-def printHelpInfo():
-	print "##########################################################"
-	print "#     Script will help you to simplified process of      #"
-	print "#            start/stop AEM instance(s)                  #"
-	print "##########################################################\n\n"
-	print "\t-s <id>\t// s={start}  	run instance by id"
-	print "\t-e <id>\t// e={end/stop} stop instance by id"
-	print "\t-k <id>\t// k={kill} 	kill instance by id"
-	print "\t-i\t// i={info} 	provide info about exist instances under /home/<loged-in_user>/.."
-	print "\t-u\t// u={update} 	update cash file\n\n"
-	print "##########################################################"
-	print "# If you want to contribute, then you can use next info: #"
-	print "# GitHub:                                                #"
-	print "#\thttps://github.com/AntonKrynytskyi/aem-script    #"			
-	print "# Email:                                                 #"
-	print "#\tAntonKrynytskyi@gmail.com                        #"	
-	print "# You can communicate with me or create a merge request  #"
-	print "# on GitHub repository.                                  #"
-	print "##########################################################"
+def write_path_to_file(aem_path_id_map):
+    f = open(DATA_FILE_PATH, "w")
 
-def printScriptFinished():
-	print "\n[> aem_ (Script was finished)]"
+    if len(aem_path_id_map) > 0:
+        for key in aem_path_id_map:
+            f.write(aem_path_id_map[key] + "=" + key + "\n")
+        print("[INFO]\n[INFO] Cash.txt file was updated")
 
-def printScriptStarted():
-		print "[> aem_ (Script is running)]"
+    f.close()
 
-def printMsg(msgText):
-	print "------------------------------------------------"
-	print msgText
-	print "------------------------------------------------"
 
-def printAllActiveEnvs(envsList):
-	numberOfEnvs=len(envsList)
+######################################
+# -------->Print info section<--------
+######################################
+def print_help_info():
+    print("##########################################################")
+    print("#     Script will help you to simplified process of      #")
+    print("#            start/stop AEM instance(s)                  #")
+    print("##########################################################\n\n")
+    print("\t-s <id>\t// s={start}  	run instance by id")
+    print("\t-e <id>\t// e={end/stop} stop instance by id")
+    print("\t-e all\t// stop all active instances")
+    print("\t-k <id>\t// k={kill} 	kill instance by id")
+    print("\t-i\t// i={info} 	provide info about exist instances under /home/<loged-in_user>/..")
+    print("\t-u\t// u={update} 	update cash file\n\n")
+    print("##########################################################")
+    print("# If you want to contribute, then you can use next info: #")
+    print("# GitHub:                                                #")
+    print("#\thttps://github.com/AntonKrynytskyi/aem-script    #")
+    print("# Email:                                                 #")
+    print("#\tAntonKrynytskyi@gmail.com                        #")
+    print("# You can communicate with me or create a merge request  #")
+    print("# on GitHub repository.                                  #")
+    print("##########################################################")
 
-	for el in envsList:
-		print str(el)
-	
-	printMsg("[MSG(INFO)>'Ran envs]: (%2s)"%(str(numberOfEnvs)))
+
+def print_all_active_envs(envs_list):
+    print("[INFO]\n[ACTS] Show run instances")
+
+    number_of_envs = len(envs_list)
+
+    for env in envs_list:
+        print(str(env))
+
+    print("[INFO]\n[INFO] Ran instances(%2s)\n[INFO]" % (str(number_of_envs)))
+
 
 #########################################
-#-------->RegExp method section<--------#
+# -------->RegExp method section<--------
 #########################################
-def extractDebugPortValue(str):
-	match=re.search(r'address=\d*', str)
-	if match:
-		portStr=match.group()
-		return portStr.replace("address=", "")
-	else:
-		return N_A
+def extract_debug_port_value(info_str):
+    match = re.search(r'address=\d*', info_str)
+    if match:
+        port_str = match.group()
+        return port_str.replace("address=", "")
+    else:
+        return N_A
 
-def extractPortValue(str):
-	match=re.search(r'launchpad\s-p\s\d*', str)
-	if match:
-		portStr=match.group()
-		return portStr.replace("launchpad -p ", "")
-	else:
-		return N_A
 
-def extractPidValue(str):
-	match=re.search(r'^[a-z]*\b(|\S{1,})\s{1,}[0-9]*', str)
-	if match:
-		pidStr=match.group()
-		pidStr=' '.join(pidStr.split()) 
-		array=pidStr.split(" ")
-		if len(array) == 2:
-			return array[1]
-		else:
-			return N_A	
-	else:
-		return N_A
+def extract_port_value(info_str):
+    match = re.search(r'launchpad\s-p\s\d*', info_str)
+    if match:
+        port_str = match.group()
+        return port_str.replace("launchpad -p ", "")
+    else:
+        return N_A
 
-def extractRunModsValue(str):
-	match=re.search(r'Dsling.run.modes=(\w*[^\s])*', str)
-	if match:
-		runModsStr=match.group()
-		return runModsStr.replace("Dsling.run.modes=", "")
-	else:
-		return N_A
 
-def extractPidPath(pid):
-	if pid and pid != N_A:
-		processPath=getStrRepresentationOfInvocation("sudo pwdx " + pid)
-		if processPath:
-			mapPidPath=processPath.split(":")
-			return mapPidPath[1].strip()
-	else:	
-		return N_A
+def extract_pid_value(info_str):
+    match = re.search(r'^[a-z]*\b(|\S+)\s+[0-9]*', info_str)
 
-def isNotAllIdExist(hashMap, envsList):
-	for env in envsList:
-		envId=hashMap[env.pathbyPid]
-		if not envId:
-			return True
-	return False
+    if match:
+        pid_str = match.group()
+        pid_str = ' '.join(pid_str.split())
+        array = pid_str.split(" ")
+        if len(array) == 2:
+            return array[1]
+        else:
+            return N_A
+    else:
+        return N_A
 
-def updateEnvsId(hashMap, envsList):
-	for env in envsList:
-		envId=hashMap[env.pathbyPid]
-		print env.pathbyPid
-		if envId:
-			env.id=envId	
+
+def extract_run_mods_value(info_str):
+    match = re.search(r'Dsling.run.modes=(\w*[^\s])*', info_str)
+    if match:
+        run_mods_str = match.group()
+        return run_mods_str.replace("Dsling.run.modes=", "")
+    else:
+        return N_A
+
+
+def extract_pid_path(pid):
+    if pid and pid != N_A:
+        process_path = get_str_representation_of_invocation("sudo pwdx " + pid)
+        if process_path:
+            map_pid_path = process_path.split(":")
+            return map_pid_path[1].strip()
+    else:
+        return N_A
+
+
+def is_not_all_id_exist(hash_map, envs_list):
+    for env in envs_list:
+        env_id = hash_map[env.path_by_pid]
+        if not env_id:
+            return True
+    return False
+
+
+def update_envs_id(hash_map, envs_list):
+    for env in envs_list:
+        env_id = hash_map[env.path_by_pid]
+        if env_id:
+            env.id = env_id
+
 
 ##########################################
-#-------->Regular method section<--------#
+# -------->Regular method section<--------
 ##########################################
-def findAemInstancePathsArray():
-	homePath = getStrRepresentationOfInvocation("echo $HOME").strip()
-	coommand = 'sudo find ' + homePath + ' -type f -name "start"| grep "/crx-quickstart/bin/start"'
+def find_aem_instance_paths_array():
+    home_path = get_str_representation_of_invocation("echo $HOME").strip()
+    command = 'sudo find ' + home_path + ' -type f -name "start"| grep "/crx-quickstart/bin/start"'
 
-	strPath = getStrRepresentationOfInvocation(coommand)
-	strPath = strPath.replace("/crx-quickstart/bin/start", "")
-	return strPath.split()
+    str_path = get_str_representation_of_invocation(command)
+    str_path = str_path.replace("/crx-quickstart/bin/start", "")
 
-def createCashMapIdKey ():
-	aemBinPathsArrray = findAemInstancePathsArray()
+    return str_path.split()
 
-	pathNumbers = len(aemBinPathsArrray)
-	index = 0
-	aemPathIdMap={};
 
-	while index < pathNumbers:
-		aemPathIdMap[aemBinPathsArrray[index]] = str(index + 1)
-	 	index +=1
+def create_cash_map_id_key():
+    aem_bin_paths_array = find_aem_instance_paths_array()
 
-	return aemPathIdMap	
+    path_numbers = len(aem_bin_paths_array)
+    index = 0
+    aem_path_id_map = {}
 
-def writeCashMapToFile():
-	aemPathIdMap=createCashMapIdKey();
-	writePathToFile(aemPathIdMap)
+    while index < path_numbers:
+        aem_path_id_map[aem_bin_paths_array[index]] = str(index + 1)
+        index += 1
 
-	return aemPathIdMap
+    return aem_path_id_map
 
-def createActiveEnvsListWithoutId():
-	mpArr=getStrRepresentationOfInvocation('ps aux | grep java | grep crx-quickstart').splitlines()
-	envsList=[]
-	for procInfo in mpArr:
-		if "ps aux | grep java | grep crx-quickstart" not in procInfo:
-			newEnv=Env()
-			newEnv.debugPort=extractDebugPortValue(procInfo)
-			newEnv.runMods=extractRunModsValue(procInfo)
-			newEnv.port=extractPortValue(procInfo) 
-			newEnv.pid=extractPidValue(procInfo)
-			newEnv.pathbyPid=extractPidPath(newEnv.pid)
 
-			envsList.append(newEnv)
-	return envsList
+def write_cash_map_to_file():
+    aem_path_id_map = create_cash_map_id_key()
+    write_path_to_file(aem_path_id_map)
 
-def createActiveEnvsLis():
-	hashMap=readCashMapPathKeyFromFile()
-	envsList=createActiveEnvsListWithoutId()
+    return aem_path_id_map
 
-	if len(hashMap) == 0 or isNotAllIdExist(hashMap, envsList):
-		hashMap=writeCashMapToFile()
-	
-	updateEnvsId(hashMap, envsList)	
-	return envsList
 
-def printInfoAboutEnvsLocation():
-	hashMap=readCashMapPathKeyFromFile()
-	if hashMap or len(hashMap)==0:
-		hashMap=readCashMapPathKeyFromFile()
+def create_active_envs_list_without_id():
+    mp_arr = get_str_representation_of_invocation('ps aux | grep java | grep crx-quickstart').splitlines()
+    envs_list = []
+    for proc_info in mp_arr:
+        if "ps aux | grep java | grep crx-quickstart" not in proc_info:
+            new_env = Env()
+            new_env.debug_port = extract_debug_port_value(proc_info)
+            new_env.run_mods = extract_run_mods_value(proc_info)
+            new_env.port = extract_port_value(proc_info)
+            new_env.pid = extract_pid_value(proc_info)
+            new_env.path_by_pid = extract_pid_path(new_env.pid)
 
-	if len(hashMap)==0:
-		printMsg("[MSG(ERROR)>'Sorry, cannot find any AEM instance!]:")
-	else:
-		printMsg("[MSG(INFO)>'List of avalible instances!']:")
-		for path in hashMap:
-			print "[ID:%2s]: [PATH:%s]"%(hashMap[path],path)
+            envs_list.append(new_env)
+    return envs_list
 
-def findActiveEnvById(envId):
-	envsList=createActiveEnvsLis()
-	for env in envsList:
-		if env.id == envId:
-			return env
-	return None
 
-def getActualCashMapById(envId):
-	cashMap=readCashMapIdKeyFromFile()		
-	if len(cashMap)==0:
-		writeCashMapToFile()
-		cashMap=readCashMapIdKeyFromFile()	
+def create_active_envs_list():
+    hash_map = read_cash_map_path_key_from_file()
+    envs_list = create_active_envs_list_without_id()
 
-	elif isNotSratedEnv(cashMap, envId):
-		writeCashMapToFile()
-		cashMap=readCashMapIdKeyFromFile()
-	return cashMap
+    if len(hash_map) == 0 or is_not_all_id_exist(hash_map, envs_list):
+        hash_map = write_cash_map_to_file()
 
-def isNotSratedEnv(cashMapIdKey, envId):
-	for envIdFromMap in cashMapIdKey:
-		if envIdFromMap==envId:
-			return False
-	return True
+    update_envs_id(hash_map, envs_list)
 
-def startEnvCommand(cashMapIdKey, envId): 
-	for envIdFromMap in cashMapIdKey:
-		if envIdFromMap==envId:
-			envPath=cashMapIdKey[envIdFromMap]
-			printMsg("[MSG(INFO)>Starting.. [ID:%2s]: [PATH:%s]]:"%(envId,envPath))
-			strCommand='sudo sh %s/crx-quickstart/bin/start'%(envPath)
-			subprocess.call(strCommand, shell=True)
+    return envs_list
 
-def startKillCommand(pid):
-	getStrRepresentationOfInvocation("sudo kill -9 %s"%(pid))
-	printMsg("[MSG(INFO)>' Process(pid: %s) was killed.]"%(pid))
+
+def print_info_about_envs_location():
+    hash_map = read_cash_map_path_key_from_file()
+    if hash_map or len(hash_map) == 0:
+        hash_map = read_cash_map_path_key_from_file()
+
+    if len(hash_map) == 0:
+        print("[WARN]\n[WARN] Sorry, cannot find any AEM instances\n[WARN]")
+    else:
+        print("[INFO]\n[INFO] List of available instances:\n[INFO]")
+        for path in hash_map:
+            print("[INFO] ID(%2s)  Path:%s" % (hash_map[path], path))
+    print("[INFO]")
+
+
+def find_active_env_by_id(env_id):
+    env_list = create_active_envs_list()
+    for env in env_list:
+        if env.id == env_id:
+            return env
+
+    return None
+
+
+# THINK ABOUT REWRITE IT
+def get_actual_cash_map_by_id(env_id):
+    cash_map = read_cash_map_id_key_from_file()
+    if len(cash_map) == 0:
+        write_cash_map_to_file()
+        cash_map = read_cash_map_id_key_from_file()
+
+    elif is_not_started_env(cash_map, env_id):
+        write_cash_map_to_file()
+        cash_map = read_cash_map_id_key_from_file()
+    return cash_map
+
+
+def is_not_started_env(cash_map_id_key, env_id):
+    for envIdFromMap in cash_map_id_key:
+        if envIdFromMap == env_id:
+            return False
+
+    return True
+
+
+def start_env_command(cash_map_id_key, env_id):
+    for envIdFromMap in cash_map_id_key:
+        if envIdFromMap == env_id:
+            env_path = cash_map_id_key[envIdFromMap]
+            print("[INFO]\n[INFO] Instance-ID: (%s)\n[INFO] Instance-Path: %s\n[INFO]\n[INFO] Log Tracing:" % (
+                env_id, env_path))
+            str_command = 'sudo sh %s/crx-quickstart/bin/start' % env_path
+            subprocess.call(str_command, shell=True)
+
+
+def start_kill_command(pid):
+    get_str_representation_of_invocation("sudo kill -9 %s" % pid)
+    print("[INFO]\n[INFO] Process(PID: %s) was killed\n[INFO]" % pid)
+
 
 #######################################
-#-------->Menu method section<--------#
+# -------->Menu method section<--------
 #######################################
-def handleSingleArgument():
-	envsList=createActiveEnvsLis()
-	if len(envsList)==0:
-		printMsg("[ATTENTION]: You have not any active instances!")
-		printInfoAboutEnvsLocation()
-	else:
-		printAllActiveEnvs(envsList)
-
-def handleTwoArguments():
-	if sys.argv[1]==INFO:
-		printInfoAboutEnvsLocation()
-		printScriptFinished()
-		quit()
-
-	if sys.argv[1]==UPDATE:
-		writeCashMapToFile()
-		printInfoAboutEnvsLocation()
-		quit()
-
-	if sys.argv[1]==HELP:
-		printHelpInfo()
-	else:
-		printMsg("[MSG(ERROR)>'Unknow parameter!']: '%s'"%(sys.argv[1]))
-
-def handleStopCommand():
-	envId=sys.argv[2]
-	if(isNumber(envId)):
-		envObjs=findActiveEnvById(envId)
-		if envObjs:	 
-			printMsg("[MSG(INFO)>'stop script was run: ']: '%s'"%(envId))
-
-			stopEnvByPath(envObjs.pathbyPid)
-
-			printMsg("[MSG(INFO)>'stop script finished!'] ")
-		else:
-			printMsg("[MSG(ERROR)>'Unknow id!']: '%s'"%(envId))
-	else:
-		printMsg("[MSG(ERROR)>'incorrect id!']: '%s'. Id should be number!"%(envId))
-
-def handleStartCommand(): 
-	envId=sys.argv[2]
-	if(isNumber(envId)):
-		cashMap=getActualCashMapById(envId)
-		if isNotSratedEnv(cashMap, envId):
-			printMsg("[MSG(ERROR)>'ID not found 404!']: '%s'. Env with current ID doesn't exist yet."%(envId))
-		else:
-			startEnvCommand(cashMap, envId)					
-	else:
-		printMsg("[MSG(ERROR)>'Incorrect ID!']: '%s'. It should be number!"%(envId))	
-
-def handleKillCommand():
-	envId=sys.argv[2]
-	if(isNumber(envId)):
-		activeEnv=findActiveEnvById(envId)		
-		if not activeEnv:
-			printMsg("[MSG(ERROR)>'ID not found 404!']: '%s'. Env with current ID doesn't run yet."%(envId))
-		else:
-			startKillCommand(activeEnv.pid)
-	else:
-		printMsg("[MSG(ERROR)>'Incorrect ID!']: '%s'. It should be number!"%(envId))	
+def handle_single_argument():
+    env_list = create_active_envs_list()
+    if len(env_list) == 0:
+        print_info_about_envs_location()
+    else:
+        print_all_active_envs(env_list)
 
 
-def handleThreeArguments(): 
-	if sys.argv[1]==STOP: 
-		handleStopCommand()
-		quit()
+def stop_all():
+    env_list = create_active_envs_list()
+    active_env_num = len(env_list)
 
-	if  sys.argv[1]==START:
-		handleStartCommand()
-		quit()
-	
-	if  sys.argv[1]==KILL:
-		handleKillCommand()	
+    if active_env_num == 0:
+        print("[WARN] Nothing to stop ")
+    else:
+        print("[INFO] Stopping all(%s)" % active_env_num)
 
-def hendleInput():
-	argNums = len(sys.argv)
-	if ONE_ARG==argNums:
-		handleSingleArgument()
-		printScriptFinished()
-		quit()
+        for currentEnv in env_list:
+            if currentEnv:
+                print("[INFO]\n[INFO] Env-ID (%s)\n[INFO] Env-PID (%s)\n"
+                      "[INFO] Env-Path: %s\n[INFO]\n[INFO] Log Tracing:" % (
+                          currentEnv.id, currentEnv.pid, currentEnv.path_by_pid))
+                stop_env_by_path(currentEnv.path_by_pid)
 
-	if TWO_ARGS==argNums:
-		handleTwoArguments()
-		printScriptFinished()
-		quit()
+        print("[INFO] Stopping all(%s) has done" % active_env_num)
 
-	if THREE_ARGS==argNums:
-		handleThreeArguments()	
+
+def handle_two_arguments():
+    if sys.argv[1] == INFO:
+        print_info_about_envs_location()
+        quit()
+
+    if sys.argv[1] == UPDATE:
+        write_cash_map_to_file()
+        print_info_about_envs_location()
+        quit()
+
+    if sys.argv[1] == HELP:
+        print_help_info()
+    else:
+        print("[WARN]\n[WARN] Unknown parameter: '%s'\n[WARN]" % (sys.argv[1]))
+
+
+def handle_stop_command():
+    print("[INFO]\n[ACTS] Stop instance")
+
+    env_id = sys.argv[2]
+    if is_number(env_id):
+        env_obj = find_active_env_by_id(env_id)
+        if env_obj:
+            print("[INFO]\n[INFO] ID(%2s)\n[INFO]\n[INFO] Log Tracing:" % env_id)
+
+            stop_env_by_path(env_obj.path_by_pid)
+
+            print("[INFO]")
+        else:
+            print("[WARN]\n[WARN] Instance with ID(%2s) wasn't be started yet.\n[WARN]" % env_id)
+    else:
+        if env_id == ALL:
+            stop_all()
+        else:
+            print("[WARN]\n[WARN] Incorrect ID(%2s)\n[WARN] ID should be a number.\n[WARN]" % env_id)
+
+
+def handle_start_command():
+    print("[INFO]\n[ACTS] Run instance")
+
+    env_id = sys.argv[2]
+    if is_number(env_id):
+        cash_map = get_actual_cash_map_by_id(env_id)
+        if is_not_started_env(cash_map, env_id):
+            print("[WARN]\n[WARN] Instance with ID(%s) not found.\n[WARN]"
+                  "\n[WARN] Use command to update instances information:"
+                  "\n[WARN] aem -u\n[WARN]" % env_id)
+        else:
+            start_env_command(cash_map, env_id)
+    else:
+        print("[WARN]\n[WARN] Incorrect ID(%2s)\n[WARN] ID should be a number.\n[WARN]" % env_id)
+
+
+def handle_kill_command():
+    print("[INFO]\n[ACTS] Kill process")
+
+    env_id = sys.argv[2]
+    if is_number(env_id):
+        active_env = find_active_env_by_id(env_id)
+        if not active_env:
+            print("[WARN]\n[WARN] Instance with ID(%s) not found.\n[WARN]"
+                  "\n[WARN] Use command to update instances information:"
+                  "\n[WARN] aem -u\n[WARN]" % env_id)
+        else:
+            start_kill_command(active_env.pid)
+    else:
+        print("[WARN]\n[WARN] Incorrect ID(%2s)\n[WARN] ID should be a number.\n[WARN]" % env_id)
+
+
+def handle_three_arguments():
+    if sys.argv[1] == STOP:
+        handle_stop_command()
+        quit()
+
+    if sys.argv[1] == START:
+        handle_start_command()
+        quit()
+
+    if sys.argv[1] == KILL:
+        handle_kill_command()
+
+
+def handle_input():
+    arg_nums = len(sys.argv)
+    if ONE_ARG == arg_nums:
+        handle_single_argument()
+        quit()
+
+    if TWO_ARGS == arg_nums:
+        handle_two_arguments()
+        quit()
+
+    if THREE_ARGS == arg_nums:
+        handle_three_arguments()
+
 
 ######################################
-#-------->Invokation section<--------#
+# -------->Invocation section<--------
 ######################################
-printScriptStarted()
 
-hendleInput()
-
-printScriptFinished()
+handle_input()
