@@ -416,12 +416,19 @@ def handle_start_command():
     env_id = sys.argv[2]
     if is_number(env_id):
         cash_map = read_cash_map_id_key_from_file()
-        if is_not_started_env(cash_map, env_id):
-            print("[WARN]\n[WARN] Instance with ID(%s) not found.\n[WARN]"
-                  "\n[WARN] Use command to update instances information:"
-                  "\n[WARN] aem -u\n[WARN]" % env_id)
+        env_obj1 = find_active_env_by_id(env_id)
+
+        if env_obj1:
+            print("[WARN]\n[WARN] Instance has already run\n[WARN]")
+            print(str(env_obj1))
+            print("[INFO]")
         else:
-            start_env_command(cash_map, env_id)
+            if is_not_started_env(cash_map, env_id):
+                print("[WARN]\n[WARN] Instance with ID(%s) not found.\n[WARN]"
+                      "\n[WARN] Use command to update instances information:"
+                      "\n[WARN] aem -u\n[WARN]" % env_id)
+            else:
+                start_env_command(cash_map, env_id)
     else:
         print("[WARN]\n[WARN] Incorrect ID(%2s)\n[WARN] ID should be a number.\n[WARN]" % env_id)
 
