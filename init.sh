@@ -1,13 +1,24 @@
 #!/bin/sh
-currentPath="$(pwd)"
-ameScrtipPath="$currentPath/aem"
-comn="alias aem=$ameScrtipPath"
 
-sudo touch cash.txt
+echo "[INFO] "
+sudo mkdir -p /usr/local/script/aem
+echo "[INFO] created /usr/local/script/aem folder"
 
+sudo cp aem /usr/local/script/aem/aem
+echo "[INFO] copy 'aem' script file to /usr/local/script/aem folder"
+
+sudo cp README.md /usr/local/script/aem/README.md
+echo "[INFO] move 'aem' script file to /usr/local/script/aem folder"
+
+sudo touch /usr/local/script/aem/cash.txt
+sudo chmod 777 /usr/local/script/aem/cash.txt
 sudo chmod 555 aem
-sudo chmod 777 cash.txt
 
-echo $comn >> ~/.bashrc 
+echo "[INFO] created cash.txt under /usr/local/script/aem folder"
 
-source ~/.bashrc
+echo "alias aem=/usr/local/script/aem/aem" >> ~/.bashrc
+#sudo source ~/.bashrc
+echo "[INFO] created 'aem 'alias under ~/.bashrc"
+
+echo "[INFO] done"
+echo "[INFO] "
