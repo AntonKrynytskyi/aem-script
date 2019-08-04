@@ -333,7 +333,7 @@ def start_env_command(cash_map_id_key, env_id):
         if envIdFromMap == env_id:
             env_path = cash_map_id_key[envIdFromMap]
             print("[INFO]\n[INFO] Instance-ID: (%s)\n[INFO] Instance-Path: %s\n[INFO]\n[INFO] Log Tracing:" % (env_id, env_path))
-            str_command = ' %s/crx-quickstart/bin/start' % env_path
+            str_command = 'cd %s/crx-quickstart/bin/;sudo sh ./start;' % env_path
             subprocess.call(str_command, shell=True)
 
 
