@@ -25,7 +25,7 @@ Script will help you to simplified process of start/stop AEM instance(s)
 
 ### Installation
 
- - Download arhcive [AEM-Script.1.1.1.zip](https://github.com/AntonKrynytskyi/aem-script/raw/master/archive/AEM-Script.1.1.1.zip)
+ - Download arhcive [AEM-Script.1.1.2.zip](https://github.com/AntonKrynytskyi/aem-script/raw/master/archive/AEM-Script.1.1.2.zip)
  - Extract file in some directory
  - Open terminal in this directory, about which we mentioned in previous item
  - Run next commands:
@@ -285,4 +285,4 @@ $ aem -help
 
 
 **Free Software, Hell Yeah!**
-### Download arhcive [AEM-Script.1.1.1.zip](https://github.com/AntonKrynytskyi/aem-script/raw/master/archive/AEM-Script.1.1.1.zip)
+### Download arhcive [AEM-Script.1.1.2.zip](https://github.com/AntonKrynytskyi/aem-script/raw/master/archive/AEM-Script.1.1.2.zip)
