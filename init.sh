@@ -16,7 +16,7 @@ sudo chmod 555 aem
 
 echo "[INFO] created cash.txt under /usr/local/script/aem folder"
 
-echo "alias aem=/usr/local/script/aem/aem" >> ~/.bashrc
+echo "alias aem='sudo /usr/local/script/aem/aem'" >> ~/.bashrc
 echo "[INFO] created 'aem 'alias under ~/.bashrc"
 
 echo "[INFO] done"
