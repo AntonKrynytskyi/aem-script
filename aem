@@ -27,6 +27,7 @@ import sys
 # -------->Constant section<--------#
 ###################################
 STOP = "-e"
+EXIT_LIKE_BOSS = "-eb"
 KILL = "-k"
 INFO = "-i"
 START = "-s"
@@ -140,6 +141,7 @@ def print_help_info():
     print("\t-s <id>\t// s={start}  	run instance by id")
     print("\t-e <id>\t// e={end/stop} stop instance by id")
     print("\t-e all\t// stop all active instances")
+    print("\t-eb\t// stop all like a Boss active instances")
     print("\t-k <id>\t// k={kill} 	kill instance by id")
     print("\t-i\t// i={info} 	provide info about exist instances under /home/<loged-in_user>/..")
     print("\t-u\t// u={update} 	update cash file\n\n")
@@ -380,6 +382,10 @@ def handle_two_arguments():
     if sys.argv[1] == UPDATE:
         write_cash_map_to_file()
         print_info_about_envs_location()
+        quit()
+
+    if sys.argv[1] == EXIT_LIKE_BOSS:
+        stop_all()
         quit()
 
     if sys.argv[1] == HELP:
