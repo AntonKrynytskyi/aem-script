@@ -25,7 +25,7 @@ Script will help you to simplified process of start/stop AEM instance(s)
 
 ### Installation
 
- - Download arhcive [AEM-Script.1.0.3.zip](https://github.com/AntonKrynytskyi/aem-script/raw/master/archive/AEM-Script.v1.0.3.zip)
+ - Download arhcive [AEM-Script.1.0.4.zip](https://github.com/AntonKrynytskyi/aem-script/raw/master/archive/AEM-Script.v1.0.4.zip)
  - Extract file in some directory
  - Open terminal in this directory, about which we mentioned in previous item
  - Run next commands:
@@ -260,11 +260,13 @@ $ aem -help
 ##########################################################
 
 
-        -s <id> // s={start}    run instance by id
-        -e <id> // e={end/stop} stop instance by id
-        -k <id> // k={kill}     kill instance by id
-        -i      // i={info}     provide info about exist instances under /home/<loged-in_user>/..
-        -u      // u={update}   update cash file
+        -s <id>	// s={start}  	run instance by id
+	      -e <id>	// e={end/stop} stop instance by id
+	      -e all	// stop all active instances
+	      -eb	    // stop all like a Boss active instances
+	      -k <id>	// k={kill} 	kill instance by id
+	      -i	    // i={info} 	provide info about exist instances under /home/<loged-in_user>/..
+	      -u	    // u={update} 	update cash file
 
 
 ##########################################################
@@ -285,4 +287,4 @@ $ aem -help
 
 
 **Free Software, Hell Yeah!**
-### Download arhcive [AEM-Script.1.0.3.zip](https://github.com/AntonKrynytskyi/aem-script/raw/master/archive/AEM-Script.v1.0.3.zip)
+### Download arhcive [AEM-Script.1.0.4.zip](https://github.com/AntonKrynytskyi/aem-script/raw/master/archive/AEM-Script.v1.0.4.zip)
