@@ -41,7 +41,7 @@ THREE_ARGS = 3
 
 N_A = "{n/a}"
 
-DATA_FILE_PATH = "cash.txt"
+DATA_FILE_PATH = "/usr/local/aem-cash.txt"
 
 
 #################################
